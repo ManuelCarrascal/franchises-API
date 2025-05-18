@@ -2,16 +2,22 @@ package com.nequi.franchise.infrastructure.configuration;
 
 import com.nequi.franchise.application.handler.IBranchHandler;
 import com.nequi.franchise.application.handler.IFranchiseHandler;
+import com.nequi.franchise.application.handler.IProductHandler;
 import com.nequi.franchise.application.handler.impl.BranchHandler;
 import com.nequi.franchise.application.handler.impl.FranchiseHandler;
+import com.nequi.franchise.application.handler.impl.ProductHandler;
 import com.nequi.franchise.application.mapper.IBranchMapper;
 import com.nequi.franchise.application.mapper.IFranchiseMapper;
+import com.nequi.franchise.application.mapper.IProductMapper;
 import com.nequi.franchise.domain.api.IBranchServicePort;
 import com.nequi.franchise.domain.api.IFranchiseServicePort;
+import com.nequi.franchise.domain.api.IProductServicePort;
 import com.nequi.franchise.domain.spi.IBranchPersistencePort;
 import com.nequi.franchise.domain.spi.IFranchisePersistencePort;
+import com.nequi.franchise.domain.spi.IProductPersistencePort;
 import com.nequi.franchise.domain.usecase.BranchUseCase;
 import com.nequi.franchise.domain.usecase.FranchiseUseCase;
+import com.nequi.franchise.domain.usecase.ProductUseCase;
 import com.nequi.franchise.infrastructure.out.adapter.BranchPersistenceAdapter;
 import com.nequi.franchise.infrastructure.out.mapper.IBranchEntityMapper;
 import com.nequi.franchise.infrastructure.out.repository.BranchRepository;
@@ -52,6 +58,16 @@ public class BeanConfig {
     @Bean
     public IBranchHandler branchHandler(IBranchServicePort servicePort, IBranchMapper mapper) {
         return new BranchHandler(servicePort, mapper);
+    }
+
+    @Bean
+    public IProductServicePort productServicePort(IProductPersistencePort productPersistencePort) {
+        return new ProductUseCase(productPersistencePort);
+    }
+
+    @Bean
+    public IProductHandler productHandler(IProductServicePort servicePort, IProductMapper mapper) {
+        return new ProductHandler(servicePort, mapper);
     }
 
 }

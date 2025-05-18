@@ -1,0 +1,7 @@
+package com.nequi.franchise.infrastructure.out.repository;
+
+import com.nequi.franchise.infrastructure.out.entity.ProductEntity;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
+public interface ProductRepository extends ReactiveCrudRepository<ProductEntity, Long> {
+}

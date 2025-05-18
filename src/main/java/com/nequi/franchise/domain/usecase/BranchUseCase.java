@@ -6,14 +6,17 @@ import com.nequi.franchise.domain.exception.InvalidBranchDataException;
 import com.nequi.franchise.domain.model.Branch;
 import com.nequi.franchise.domain.spi.IBranchPersistencePort;
 import com.nequi.franchise.domain.spi.IFranchisePersistencePort;
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
 public class BranchUseCase implements IBranchServicePort {
 
     private final IBranchPersistencePort branchPersistencePort;
     private final IFranchisePersistencePort franchisePersistencePort;
+
+    public BranchUseCase(IBranchPersistencePort branchPersistencePort, IFranchisePersistencePort franchisePersistencePort) {
+        this.branchPersistencePort = branchPersistencePort;
+        this.franchisePersistencePort = franchisePersistencePort;
+    }
 
     @Override
     public Mono<Branch> createBranch(Branch branch) {
