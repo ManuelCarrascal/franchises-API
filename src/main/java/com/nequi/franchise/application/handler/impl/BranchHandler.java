@@ -1,6 +1,7 @@
 package com.nequi.franchise.application.handler.impl;
 
 import com.nequi.franchise.application.dto.request.BranchRequestDto;
+import com.nequi.franchise.application.dto.request.BranchUpdateRequestDto;
 import com.nequi.franchise.application.handler.IBranchHandler;
 import com.nequi.franchise.application.mapper.IBranchMapper;
 import com.nequi.franchise.domain.api.IBranchServicePort;
@@ -30,5 +31,26 @@ public class BranchHandler implements IBranchHandler {
                             .map(branchMapper::toDto)
                             .flatMap(res -> ServerResponse.ok().bodyValue(res));
                 });
+    }
+
+    @Override
+    public Mono<ServerResponse> update(ServerRequest request) {
+        try {
+            Long id = Long.parseLong(request.pathVariable("id"));
+
+            return request.bodyToMono(BranchUpdateRequestDto.class)
+                    .flatMap(dto -> {
+                        if (dto.getName() == null || dto.getName().isBlank()) {
+                            return ServerResponse.badRequest().bodyValue("Branch name is required");
+                        }
+
+                        return branchServicePort.updateBranchName(id, dto.getName())
+                                .map(branchMapper::toDto)
+                                .flatMap(res -> ServerResponse.ok().bodyValue(res));
+                    });
+
+        } catch (NumberFormatException e) {
+            return ServerResponse.badRequest().bodyValue("Branch ID must be a valid number");
+        }
     }
 }

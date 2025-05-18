@@ -1,8 +1,10 @@
 package com.nequi.franchise.infrastructure.input.entrypoints;
 
 import com.nequi.franchise.application.dto.request.BranchRequestDto;
+import com.nequi.franchise.application.dto.request.BranchUpdateRequestDto;
 import com.nequi.franchise.application.handler.IBranchHandler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -49,9 +51,30 @@ public class BranchRouter {
                                     @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/branches/{id}",
+                    method = RequestMethod.PUT,
+                    beanClass = IBranchHandler.class,
+                    beanMethod = "update",
+                    operation = @Operation(
+                            operationId = "updateBranch",
+                            summary = "Update a branch's name",
+                            description = "Updates the name of a specific branch by ID",
+                            parameters = @Parameter(name = "id", description = "Branch ID", required = true),
+                            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = BranchUpdateRequestDto.class))),
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "Branch updated successfully"),
+                                    @ApiResponse(responseCode = "400", description = "Invalid input"),
+                                    @ApiResponse(responseCode = "404", description = "Branch not found")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> branchRoutes(IBranchHandler handler) {
-        return route(POST(BASE_PATH), handler::create);
+        return route()
+                .POST(BASE_PATH, handler::create)
+                .PUT(BASE_PATH+"/{id}", handler::update)
+                .build();
     }
 }
