@@ -1,6 +1,5 @@
 package com.nequi.franchise.domain.usecase;
 
-import com.nequi.franchise.domain.exception.BranchNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidProductDataException;
 import com.nequi.franchise.domain.exception.InvalidStockException;
 import com.nequi.franchise.domain.exception.ProductNotFoundException;
@@ -108,6 +107,57 @@ class ProductUseCaseTest {
         StepVerifier.create(productUseCase.updateStock(productId, newStock))
                 .assertNext(updatedProduct -> {
                     assert updatedProduct.getStock().equals(newStock);
+                })
+                .verifyComplete();
+
+        verify(productPersistencePort).findById(productId);
+        verify(productPersistencePort).saveProduct(any(Product.class));
+    }
+
+    @Test
+    void updateName_shouldReturnError_whenProductIdOrNameIsInvalid() {
+        StepVerifier.create(productUseCase.updateName(null, "New Name"))
+                .expectError(InvalidProductDataException.class)
+                .verify();
+
+        StepVerifier.create(productUseCase.updateName(0L, "New Name"))
+                .expectError(InvalidProductDataException.class)
+                .verify();
+
+        StepVerifier.create(productUseCase.updateName(1L, null))
+                .expectError(InvalidProductDataException.class)
+                .verify();
+
+        StepVerifier.create(productUseCase.updateName(1L, " "))
+                .expectError(InvalidProductDataException.class)
+                .verify();
+    }
+
+    @Test
+    void updateName_shouldReturnError_whenProductNotFound() {
+        Long productId = 1L;
+        String newName = "Updated Name";
+
+        when(productPersistencePort.findById(productId)).thenReturn(Mono.empty());
+
+        StepVerifier.create(productUseCase.updateName(productId, newName))
+                .expectError(ProductNotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void updateName_shouldUpdateName_whenProductExists() {
+        Long productId = 1L;
+        String newName = "Updated Name";
+        Product existingProduct = new Product(productId, "Old Name", 10.0, 5, 1L);
+
+        when(productPersistencePort.findById(productId)).thenReturn(Mono.just(existingProduct));
+        when(productPersistencePort.saveProduct(any(Product.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+
+        StepVerifier.create(productUseCase.updateName(productId, newName))
+                .assertNext(updatedProduct -> {
+                    assert updatedProduct.getName().equals(newName);
                 })
                 .verifyComplete();
 

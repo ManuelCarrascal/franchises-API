@@ -1,6 +1,7 @@
 package com.nequi.franchise.infrastructure.input.entrypoints;
 
 import com.nequi.franchise.application.dto.request.ProductRequestDto;
+import com.nequi.franchise.application.dto.request.ProductUpdateRequestDto;
 import com.nequi.franchise.application.dto.request.StockUpdateRequestDto;
 import com.nequi.franchise.application.handler.IProductHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,6 +83,24 @@ public class ProductRouter {
                                     @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = BASE_PATH + "/{id}/name",
+                    method = RequestMethod.PUT,
+                    beanClass = IProductHandler.class,
+                    beanMethod = "updateName",
+                    operation = @Operation(
+                            operationId = OPERATION_ID_UPDATE_NAME,
+                            summary = OPERATION_SUMMARY_UPDATE_NAME,
+                            description = OPERATION_DESCRIPTION_UPDATE_NAME,
+                            parameters = @Parameter(name = PARAMETER_ID_NAME_UPDATE, description = PARAMETER_ID_DESCRIPTION_UPDATE, required = true),
+                            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = ProductUpdateRequestDto.class))),
+                            responses = {
+                                    @ApiResponse(responseCode = RESPONSE_200, description = RESPONSE_OK_UPDATE_NAME),
+                                    @ApiResponse(responseCode = RESPONSE_400, description = RESPONSE_BAD_REQUEST_UPDATE_NAME),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> productRoutes(IProductHandler handler) {
@@ -89,6 +108,7 @@ public class ProductRouter {
                 .POST(BASE_PATH, handler::create)
                 .DELETE(BASE_PATH + "/{id}", handler::delete)
                 .PUT(BASE_PATH + "/{id}/stock", handler::updateStock)
+                .PUT(BASE_PATH + "/{id}/name", handler::updateName)
                 .build();
     }
 }

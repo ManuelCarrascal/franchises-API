@@ -29,6 +29,15 @@ public class ProductRouterConstants {
     public static final String PARAMETER_ID_NAME = "id";
     public static final String PARAMETER_ID_DESCRIPTION = "Product ID";
 
+    public static final String OPERATION_ID_UPDATE_NAME = "updateProductName";
+    public static final String OPERATION_SUMMARY_UPDATE_NAME = "Update product name";
+    public static final String OPERATION_DESCRIPTION_UPDATE_NAME = "Updates the name of a specific product by ID";
+    public static final String RESPONSE_OK_UPDATE_NAME = "Product name updated successfully";
+    public static final String RESPONSE_BAD_REQUEST_UPDATE_NAME = "Invalid product ID or name";
+    public static final String PARAMETER_ID_NAME_UPDATE = "id";
+    public static final String PARAMETER_ID_DESCRIPTION_UPDATE = "Product ID";
+
+
     private ProductRouterConstants() {
     }
 }
