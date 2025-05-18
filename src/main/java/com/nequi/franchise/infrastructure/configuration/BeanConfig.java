@@ -43,7 +43,7 @@ public class BeanConfig {
         return new FranchiseHandler(franchiseServicePort,franchiseMapper);
     }
 
-    @Bean(name = "branchPersistencePort")
+    @Bean
     public IBranchPersistencePort branchPersistencePort(BranchRepository repository, IBranchEntityMapper mapper) {
         return new BranchPersistenceAdapter(repository, mapper);
     }
@@ -61,8 +61,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public IProductServicePort productServicePort(IProductPersistencePort productPersistencePort) {
-        return new ProductUseCase(productPersistencePort);
+    public IProductServicePort productServicePort(IProductPersistencePort productPersistencePort, IBranchPersistencePort branchPersistencePort) {
+        return new ProductUseCase(productPersistencePort,branchPersistencePort);
     }
 
     @Bean
