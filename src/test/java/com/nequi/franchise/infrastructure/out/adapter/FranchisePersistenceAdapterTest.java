@@ -26,7 +26,6 @@ class FranchisePersistenceAdapterTest {
 
     @Test
     void saveFranchise_shouldSaveAndReturnFranchiseModel() {
-        // Arrange
         Franchise domainFranchise = new Franchise(null, "Taco Bell");
         FranchiseEntity entityToSave = new FranchiseEntity(null, "Taco Bell");
         FranchiseEntity savedEntity = new FranchiseEntity(1L, "Taco Bell");
@@ -36,14 +35,29 @@ class FranchisePersistenceAdapterTest {
         when(franchiseRepository.save(entityToSave)).thenReturn(Mono.just(savedEntity));
         when(franchiseEntityMapper.toModel(savedEntity)).thenReturn(savedDomainModel);
 
-        // Act & Assert
         StepVerifier.create(adapter.saveFranchise(domainFranchise))
                 .expectNext(savedDomainModel)
                 .verifyComplete();
 
-        // Verify interactions
         verify(franchiseEntityMapper).toEntity(domainFranchise);
         verify(franchiseRepository).save(entityToSave);
         verify(franchiseEntityMapper).toModel(savedEntity);
+    }
+
+    @Test
+    void findById_shouldReturnFranchiseModel() {
+        Long id = 1L;
+        FranchiseEntity entity = new FranchiseEntity(id, "Burger King");
+        Franchise expectedModel = new Franchise(id, "Burger King");
+
+        when(franchiseRepository.findById(id)).thenReturn(Mono.just(entity));
+        when(franchiseEntityMapper.toModel(entity)).thenReturn(expectedModel);
+
+        StepVerifier.create(adapter.findById(id))
+                .expectNext(expectedModel)
+                .verifyComplete();
+
+        verify(franchiseRepository).findById(id);
+        verify(franchiseEntityMapper).toModel(entity);
     }
 }
