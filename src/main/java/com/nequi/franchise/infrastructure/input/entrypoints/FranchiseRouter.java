@@ -1,9 +1,11 @@
 package com.nequi.franchise.infrastructure.input.entrypoints;
 
 import com.nequi.franchise.application.dto.request.FranchiseRequestDto;
+import com.nequi.franchise.application.dto.request.FranchiseUpdateRequestDto;
 import com.nequi.franchise.application.handler.IFranchiseHandler;
 import com.nequi.franchise.infrastructure.utils.constants.FranchiseRouterConstants;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -19,7 +21,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static com.nequi.franchise.infrastructure.utils.constants.ResponseCodesOpenApiConstants.RESPONSE_200;
 import static com.nequi.franchise.infrastructure.utils.constants.ResponseCodesOpenApiConstants.RESPONSE_400;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -50,9 +51,31 @@ public class FranchiseRouter {
                                     @ApiResponse(responseCode = RESPONSE_400, description = FranchiseRouterConstants.RESPONSE_BAD_REQUEST_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/franchises/{id}",
+                    method = RequestMethod.PUT,
+                    beanClass = IFranchiseHandler.class,
+                    beanMethod = "update",
+                    operation = @Operation(
+                            operationId = "updateFranchise",
+                            summary = "Update a franchise's name",
+                            description = "Modifies the name of a specific franchise",
+                            parameters = @Parameter(name = "id", description = "Franchise ID", required = true),
+                            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = FranchiseUpdateRequestDto.class))),
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "Franchise updated successfully"),
+                                    @ApiResponse(responseCode = "400", description = "Invalid franchise data"),
+                                    @ApiResponse(responseCode = "404", description = "Franchise not found")
+                            }
+                    )
             )
     })
+
     public RouterFunction<ServerResponse> franchiseRoutes(IFranchiseHandler handler) {
-        return route(POST(FranchiseRouterConstants.BASE_PATH), handler::create);
+        return route()
+                .POST(FranchiseRouterConstants.BASE_PATH,handler::create)
+                .PUT(FranchiseRouterConstants.BASE_PATH + "/{id}", handler::update)
+                .build();
     }
 }
