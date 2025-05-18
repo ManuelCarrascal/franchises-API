@@ -1,6 +1,7 @@
 package com.nequi.franchise.application.handler.impl;
 
 import com.nequi.franchise.application.dto.request.ProductRequestDto;
+import com.nequi.franchise.application.dto.request.ProductUpdateRequestDto;
 import com.nequi.franchise.application.dto.request.StockUpdateRequestDto;
 import com.nequi.franchise.application.handler.IProductHandler;
 import com.nequi.franchise.application.mapper.IProductMapper;
@@ -67,4 +68,25 @@ public class ProductHandler implements IProductHandler {
                             .flatMap(res -> ServerResponse.ok().bodyValue(res));
                 });
     }
+
+    @Override
+    public Mono<ServerResponse> updateName(ServerRequest request) {
+        try {
+            Long id = Long.parseLong(request.pathVariable(PATH_VARIABLE_ID));
+
+            return request.bodyToMono(ProductUpdateRequestDto.class)
+                    .flatMap(dto -> {
+                        if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+                            return ServerResponse.badRequest().bodyValue(INVALID_PRODUCT_NAME);
+                        }
+                        return productServicePort.updateName(id, dto.getName())
+                                .map(productMapper::toDto)
+                                .flatMap(res -> ServerResponse.ok().bodyValue(res));
+                    });
+
+        } catch (NumberFormatException e) {
+            return ServerResponse.badRequest().bodyValue(INVALID_PRODUCT_ID);
+        }
+    }
+
 }

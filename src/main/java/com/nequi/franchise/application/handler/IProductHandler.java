@@ -8,5 +8,6 @@ public interface IProductHandler{
     Mono<ServerResponse> create(ServerRequest request);
     Mono<ServerResponse> delete(ServerRequest request);
     Mono<ServerResponse> updateStock(ServerRequest request);
+    Mono<ServerResponse> updateName(ServerRequest request);
 
 }

@@ -53,4 +53,18 @@ public class ProductUseCase implements IProductServicePort {
                     return productPersistencePort.saveProduct(product);
                 });
     }
+
+    @Override
+    public Mono<Product> updateName(Long productId, String newName) {
+        if (productId == null || productId <= 0 || newName == null || newName.trim().isEmpty()) {
+            return Mono.error(new InvalidProductDataException(ERROR_INVALID_PRODUCT_ID_OR_NAME));
+        }
+
+        return productPersistencePort.findById(productId)
+                .switchIfEmpty(Mono.error(new ProductNotFoundException(ERROR_PRODUCT_NOT_FOUND)))
+                .flatMap(product -> {
+                    product.setName(newName);
+                    return productPersistencePort.saveProduct(product);
+                });
+    }
 }
