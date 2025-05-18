@@ -7,6 +7,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import static com.nequi.franchise.application.util.constants.StockQueryHandlerConstants.*;
+
 public class StockQueryHandler implements IStockQueryHandler {
 
     private final IStockQueryServicePort stockQueryService;
@@ -17,9 +19,18 @@ public class StockQueryHandler implements IStockQueryHandler {
 
     @Override
     public Mono<ServerResponse> getTopStockProducts(ServerRequest request) {
-        Long franchiseId = Long.valueOf(request.pathVariable("id"));
-        return ServerResponse.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(stockQueryService.getTopProductByStockByFranchise(franchiseId), Object.class);
+        try {
+            Long franchiseId = Long.parseLong(request.pathVariable(PATH_VARIABLE_ID));
+            if (franchiseId <= MIN_VALID_FRANCHISE_ID) {
+                return ServerResponse.badRequest().bodyValue(ERROR_NON_POSITIVE_FRANCHISE_ID);
+            }
+
+            return ServerResponse.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(stockQueryService.getTopProductByStockByFranchise(franchiseId), Object.class);
+
+        } catch (NumberFormatException e) {
+            return ServerResponse.badRequest().bodyValue(ERROR_INVALID_FRANCHISE_ID);
+        }
     }
 }
