@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static com.nequi.franchise.infrastructure.utils.constants.ProductRouterConstants.*;
@@ -46,9 +47,27 @@ public class ProductRouter {
                                     @ApiResponse(responseCode = RESPONSE_400, description = RESPONSE_BAD_REQUEST_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = BASE_PATH + "/{id}",
+                    method = RequestMethod.DELETE,
+                    beanClass = IProductHandler.class,
+                    beanMethod = "delete",
+                    operation = @Operation(
+                            operationId = OPERATION_ID_DELETE,
+                            summary = OPERATION_SUMMARY_DELETE,
+                            description = OPERATION_DESCRIPTION_DELETE,
+                            responses = {
+                                    @ApiResponse(responseCode = RESPONSE_204, description = RESPONSE_NO_CONTENT_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> productRoutes(IProductHandler handler) {
-        return route(POST(BASE_PATH), handler::create);
+        return RouterFunctions.route()
+                .POST(BASE_PATH, handler::create)
+                .DELETE(BASE_PATH + "/{id}", handler::delete)
+                .build();
     }
 }

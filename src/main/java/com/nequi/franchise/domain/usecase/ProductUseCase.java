@@ -3,6 +3,7 @@ package com.nequi.franchise.domain.usecase;
 import com.nequi.franchise.domain.api.IProductServicePort;
 import com.nequi.franchise.domain.exception.BranchNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidProductDataException;
+import com.nequi.franchise.domain.exception.ProductNotFoundException;
 import com.nequi.franchise.domain.model.Product;
 import com.nequi.franchise.domain.spi.IBranchPersistencePort;
 import com.nequi.franchise.domain.spi.IProductPersistencePort;
@@ -29,5 +30,12 @@ public class ProductUseCase implements IProductServicePort {
         return branchPersistencePort.findById(product.getBranchId())
                 .switchIfEmpty(Mono.error(new BranchNotFoundException(ERROR_BRANCH_NOT_FOUND)))
                 .then(productPersistencePort.saveProduct(product));
+    }
+
+    @Override
+    public Mono<Void> deleteProduct(Long productId) {
+        return productPersistencePort.findById(productId)
+                .switchIfEmpty(Mono.error(new ProductNotFoundException(ERROR_PRODUCT_NOT_FOUND)))
+                .then(productPersistencePort.deleteById(productId));
     }
 }

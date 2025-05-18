@@ -20,4 +20,15 @@ public class ProductPersistenceAdapter implements IProductPersistencePort {
         ProductEntity entity = productEntityMapper.toEntity(product);
         return productRepository.save(entity).map(productEntityMapper::toModel);
     }
+
+    @Override
+    public Mono<Product> findById(Long id) {
+        return productRepository.findById(id)
+                .map(productEntityMapper::toModel);
+    }
+
+    @Override
+    public Mono<Void> deleteById(Long id) {
+        return productRepository.deleteById(id);
+    }
 }

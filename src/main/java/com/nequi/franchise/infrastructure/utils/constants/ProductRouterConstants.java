@@ -14,6 +14,13 @@ public class ProductRouterConstants {
     public static final String RESPONSE_OK_DESCRIPTION = "Product created successfully";
     public static final String RESPONSE_BAD_REQUEST_DESCRIPTION = "Invalid product data";
 
+    public static final String OPERATION_ID_DELETE = "deleteProduct";
+    public static final String OPERATION_SUMMARY_DELETE = "Delete a product by ID";
+    public static final String OPERATION_DESCRIPTION_DELETE = "Deletes a product using its ID";
+
+    public static final String RESPONSE_NO_CONTENT_DESCRIPTION = "Product deleted successfully";
+    public static final String RESPONSE_NOT_FOUND_DESCRIPTION = "Product not found";
+
     private ProductRouterConstants() {
     }
 }
