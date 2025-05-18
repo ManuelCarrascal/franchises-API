@@ -1,5 +1,6 @@
 package com.nequi.franchise.infrastructure.exceptionhandler;
 
+import com.nequi.franchise.domain.exception.BranchNotFoundException;
 import com.nequi.franchise.domain.exception.FranchiseNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidFranchiseDataException;
 import com.nequi.franchise.domain.exception.InvalidBranchDataException;
@@ -21,7 +22,7 @@ public class GlobalErrorWebExceptionHandler implements ErrorWebExceptionHandler 
         if (ex instanceof InvalidFranchiseDataException || ex instanceof InvalidBranchDataException) {
             status = HttpStatus.BAD_REQUEST;
             message = ex.getMessage();
-        } else if (ex instanceof FranchiseNotFoundException) {
+        }  else if (ex instanceof FranchiseNotFoundException || ex instanceof BranchNotFoundException) {
             status = HttpStatus.NOT_FOUND;
             message = ex.getMessage();
         }

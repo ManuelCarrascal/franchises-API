@@ -1,0 +1,33 @@
+package com.nequi.franchise.domain.usecase;
+
+import com.nequi.franchise.domain.api.IProductServicePort;
+import com.nequi.franchise.domain.exception.BranchNotFoundException;
+import com.nequi.franchise.domain.exception.InvalidProductDataException;
+import com.nequi.franchise.domain.model.Product;
+import com.nequi.franchise.domain.spi.IBranchPersistencePort;
+import com.nequi.franchise.domain.spi.IProductPersistencePort;
+import reactor.core.publisher.Mono;
+
+import static com.nequi.franchise.domain.utils.constants.ProductUseCaseConstants.*;
+
+public class ProductUseCase implements IProductServicePort {
+
+    private final IProductPersistencePort productPersistencePort;
+    private final IBranchPersistencePort branchPersistencePort;
+
+    public ProductUseCase(IProductPersistencePort productPersistencePort, IBranchPersistencePort branchPersistencePort) {
+        this.productPersistencePort = productPersistencePort;
+        this.branchPersistencePort = branchPersistencePort;
+    }
+
+    @Override
+    public Mono<Product> createProduct(Product product) {
+        if (product.getBranchId() == null || product.getName() == null || product.getPrice() == null) {
+            return Mono.error(new InvalidProductDataException(ERROR_REQUIRED_FIELDS));
+        }
+
+        return branchPersistencePort.findById(product.getBranchId())
+                .switchIfEmpty(Mono.error(new BranchNotFoundException(ERROR_BRANCH_NOT_FOUND)))
+                .then(productPersistencePort.saveProduct(product));
+    }
+}
