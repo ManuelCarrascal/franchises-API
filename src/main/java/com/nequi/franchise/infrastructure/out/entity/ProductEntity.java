@@ -17,5 +17,6 @@ public class ProductEntity {
     private Long id;
     private String name;
     private Double price;
+    private Integer stock;
     private Long branchId;
 }

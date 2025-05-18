@@ -2,6 +2,7 @@ package com.nequi.franchise.domain.usecase;
 
 import com.nequi.franchise.domain.exception.BranchNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidProductDataException;
+import com.nequi.franchise.domain.exception.InvalidStockException;
 import com.nequi.franchise.domain.exception.ProductNotFoundException;
 import com.nequi.franchise.domain.model.Product;
 import com.nequi.franchise.domain.model.Branch;
@@ -29,7 +30,7 @@ class ProductUseCaseTest {
 
     @Test
     void createProduct_shouldReturnError_whenDataIsInvalid() {
-        Product invalidProduct = new Product(null, null, null, null);
+        Product invalidProduct = new Product(null, null, null,null, null);
 
         StepVerifier.create(productUseCase.createProduct(invalidProduct))
                 .expectError(InvalidProductDataException.class)
@@ -39,7 +40,7 @@ class ProductUseCaseTest {
 
     @Test
     void createProduct_shouldSaveProduct_whenDataIsValid() {
-        Product product = new Product(null, "Product 1", 10.0, 1L);
+        Product product = new Product(null, "Product 1", 10.0,4, 1L);
         Branch dummyBranch = new Branch(1L, "Branch 1", "Address", 2L);
 
         when(branchPersistencePort.findById(1L)).thenReturn(Mono.just(dummyBranch));
@@ -55,7 +56,7 @@ class ProductUseCaseTest {
     @Test
     void deleteProduct_shouldDeleteProduct_whenProductExists() {
         Long productId = 1L;
-        Product existingProduct = new Product(productId, "Product 1", 10.0, 1L);
+        Product existingProduct = new Product(productId, "Product 1", 10.0,4 ,1L);
 
         when(productPersistencePort.findById(productId)).thenReturn(Mono.just(existingProduct));
         when(productPersistencePort.deleteById(productId)).thenReturn(Mono.empty());
@@ -65,5 +66,52 @@ class ProductUseCaseTest {
 
         verify(productPersistencePort).findById(productId);
         verify(productPersistencePort).deleteById(productId);
+    }
+
+    @Test
+    void updateStock_shouldReturnError_whenStockIsInvalid() {
+        Long productId = 1L;
+
+        // Stock nulo
+        StepVerifier.create(productUseCase.updateStock(productId, null))
+                .expectError(InvalidStockException.class)
+                .verify();
+
+        // Stock negativo
+        StepVerifier.create(productUseCase.updateStock(productId, -1))
+                .expectError(InvalidStockException.class)
+                .verify();
+    }
+
+    @Test
+    void updateStock_shouldReturnError_whenProductNotFound() {
+        Long productId = 1L;
+        Integer newStock = 5;
+
+        when(productPersistencePort.findById(productId)).thenReturn(Mono.empty());
+
+        StepVerifier.create(productUseCase.updateStock(productId, newStock))
+                .expectError(ProductNotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void updateStock_shouldUpdateStock_whenProductExists() {
+        Long productId = 1L;
+        Integer newStock = 20;
+        Product product = new Product(productId, "Product 1", 10.0, 4, 1L);
+
+        when(productPersistencePort.findById(productId)).thenReturn(Mono.just(product));
+        when(productPersistencePort.saveProduct(any(Product.class)))
+                .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+
+        StepVerifier.create(productUseCase.updateStock(productId, newStock))
+                .assertNext(updatedProduct -> {
+                    assert updatedProduct.getStock().equals(newStock);
+                })
+                .verifyComplete();
+
+        verify(productPersistencePort).findById(productId);
+        verify(productPersistencePort).saveProduct(any(Product.class));
     }
 }

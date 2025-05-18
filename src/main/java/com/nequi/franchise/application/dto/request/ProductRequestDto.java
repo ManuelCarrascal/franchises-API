@@ -10,5 +10,6 @@ import org.springframework.validation.annotation.Validated;
 public class ProductRequestDto {
     private String name;
     private Double price;
+    private Integer stock;
     private Long branchId;
 }

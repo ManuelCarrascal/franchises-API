@@ -21,6 +21,14 @@ public class ProductRouterConstants {
     public static final String RESPONSE_NO_CONTENT_DESCRIPTION = "Product deleted successfully";
     public static final String RESPONSE_NOT_FOUND_DESCRIPTION = "Product not found";
 
+    public static final String OPERATION_ID_UPDATE_STOCK = "updateProductStock";
+    public static final String OPERATION_SUMMARY_UPDATE_STOCK = "Update product stock";
+    public static final String OPERATION_DESCRIPTION_UPDATE_STOCK = "Modifies the stock of a specific product";
+    public static final String RESPONSE_STOCK_UPDATED_DESCRIPTION = "Stock updated successfully";
+    public static final String RESPONSE_INVALID_STOCK_DESCRIPTION = "Invalid stock value";
+    public static final String PARAMETER_ID_NAME = "id";
+    public static final String PARAMETER_ID_DESCRIPTION = "Product ID";
+
     private ProductRouterConstants() {
     }
 }
