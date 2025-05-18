@@ -47,14 +47,27 @@ public class ProductRouter {
                                     @ApiResponse(responseCode = RESPONSE_400, description = RESPONSE_BAD_REQUEST_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = BASE_PATH + "/{id}",
+                    method = RequestMethod.DELETE,
+                    beanClass = IProductHandler.class,
+                    beanMethod = "delete",
+                    operation = @Operation(
+                            operationId = OPERATION_ID_DELETE,
+                            summary = OPERATION_SUMMARY_DELETE,
+                            description = OPERATION_DESCRIPTION_DELETE,
+                            responses = {
+                                    @ApiResponse(responseCode = RESPONSE_204, description = RESPONSE_NO_CONTENT_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> productRoutes(IProductHandler handler) {
         return RouterFunctions.route()
-                .POST("/api/products", handler::create)
-                .DELETE("/api/products/{id}", handler::delete)
+                .POST(BASE_PATH, handler::create)
+                .DELETE(BASE_PATH + "/{id}", handler::delete)
                 .build();
     }
-
-
 }

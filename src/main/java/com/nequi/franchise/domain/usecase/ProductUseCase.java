@@ -35,7 +35,7 @@ public class ProductUseCase implements IProductServicePort {
     @Override
     public Mono<Void> deleteProduct(Long productId) {
         return productPersistencePort.findById(productId)
-                .switchIfEmpty(Mono.error(new ProductNotFoundException("Product not found")))
+                .switchIfEmpty(Mono.error(new ProductNotFoundException(ERROR_PRODUCT_NOT_FOUND)))
                 .then(productPersistencePort.deleteById(productId));
     }
 }
