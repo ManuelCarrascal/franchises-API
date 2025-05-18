@@ -44,6 +44,8 @@ dependencies {
 	testImplementation 'org.springframework:spring-webflux'
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.springframework:spring-test'
+	testImplementation 'org.mockito:mockito-junit-jupiter'
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 }
