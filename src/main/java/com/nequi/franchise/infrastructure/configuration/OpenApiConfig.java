@@ -33,4 +33,12 @@ public class OpenApiConfig {
                 .pathsToMatch("/api/branches/**")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi productApi() {
+        return GroupedOpenApi.builder()
+                .group("product")
+                .pathsToMatch("/api/products/**")
+                .build();
+    }
 }

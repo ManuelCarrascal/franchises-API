@@ -1,5 +1,6 @@
 package com.nequi.franchise.domain.usecase;
 
+import com.nequi.franchise.domain.exception.BranchNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidBranchDataException;
 import com.nequi.franchise.domain.model.Branch;
 import com.nequi.franchise.domain.model.Franchise;
@@ -47,5 +48,47 @@ class BranchUseCaseTest {
                 .verifyComplete();
 
         verify(branchPersistencePort).saveBranch(branch);
+    }
+
+    @Test
+    void updateBranchName_ShouldReturnError_WhenIdIsInvalid() {
+        StepVerifier.create(branchUseCase.updateBranchName(0L, "New Name"))
+                .expectError(InvalidBranchDataException.class)
+                .verify();
+    }
+
+    @Test
+    void updateBranchName_ShouldReturnError_WhenNameIsInvalid() {
+        StepVerifier.create(branchUseCase.updateBranchName(1L, " "))
+                .expectError(InvalidBranchDataException.class)
+                .verify();
+    }
+
+    @Test
+    void updateBranchName_ShouldReturnError_WhenBranchNotFound() {
+        when(branchPersistencePort.findById(1L)).thenReturn(Mono.empty());
+
+        StepVerifier.create(branchUseCase.updateBranchName(1L, "New Name"))
+                .expectError(BranchNotFoundException.class)
+                .verify();
+
+        verify(branchPersistencePort).findById(1L);
+        verify(branchPersistencePort, never()).saveBranch(any());
+    }
+
+    @Test
+    void updateBranchName_ShouldUpdateSuccessfully_WhenValid() {
+        Branch existingBranch = new Branch(1L, "Old Name", "Address", 2L);
+        Branch updatedBranch = new Branch(1L, "New Name", "Address", 2L);
+
+        when(branchPersistencePort.findById(1L)).thenReturn(Mono.just(existingBranch));
+        when(branchPersistencePort.saveBranch(any(Branch.class))).thenReturn(Mono.just(updatedBranch));
+
+        StepVerifier.create(branchUseCase.updateBranchName(1L, "New Name"))
+                .expectNext(updatedBranch)
+                .verifyComplete();
+
+        verify(branchPersistencePort).findById(1L);
+        verify(branchPersistencePort).saveBranch(any(Branch.class));
     }
 }

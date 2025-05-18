@@ -1,8 +1,10 @@
 package com.nequi.franchise.infrastructure.input.entrypoints;
 
 import com.nequi.franchise.application.dto.request.BranchRequestDto;
+import com.nequi.franchise.application.dto.request.BranchUpdateRequestDto;
 import com.nequi.franchise.application.handler.IBranchHandler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -49,9 +51,30 @@ public class BranchRouter {
                                     @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = BASE_PATH+"/{id}",
+                    method = RequestMethod.PUT,
+                    beanClass = IBranchHandler.class,
+                    beanMethod = "update",
+                    operation = @Operation(
+                            operationId = OPERATION_ID_UPDATE,
+                            summary = OPERATION_SUMMARY_UPDATE,
+                            description = OPERATION_DESCRIPTION_UPDATE,
+                            parameters = @Parameter(name = PARAMETER_ID_NAME, description = PARAMETER_ID_DESCRIPTION, required = true),
+                            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = BranchUpdateRequestDto.class))),
+                            responses = {
+                                    @ApiResponse(responseCode = RESPONSE_200, description = RESPONSE_OK_UPDATE_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_400, description = RESPONSE_INVALID_INPUT_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_BRANCH_NOT_FOUND_DESCRIPTION)
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> branchRoutes(IBranchHandler handler) {
-        return route(POST(BASE_PATH), handler::create);
+        return route()
+                .POST(BASE_PATH, handler::create)
+                .PUT(BASE_PATH+"/{id}", handler::update)
+                .build();
     }
 }
