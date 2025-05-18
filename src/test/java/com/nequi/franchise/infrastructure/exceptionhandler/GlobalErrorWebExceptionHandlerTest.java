@@ -4,10 +4,10 @@ import com.nequi.franchise.domain.exception.InvalidFranchiseDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -24,40 +24,42 @@ class GlobalErrorWebExceptionHandlerTest {
 
     @Test
     void handle_shouldReturnBadRequestForInvalidFranchiseDataException() {
-        // Arrange
-        String errorMessage = "Nombre inválido";
+        String errorMessage = "Invalid name";
         Throwable exception = new InvalidFranchiseDataException(errorMessage);
         ServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.post("/api/franchises").build()
         );
 
-        // Act
         Mono<Void> result = handler.handle(exchange, exception);
 
-        // Assert
         StepVerifier.create(result).verifyComplete();
 
         MockServerHttpResponse response = (MockServerHttpResponse) exchange.getResponse();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBodyAsString().block()).isEqualTo(errorMessage);
+
+        String expectedJson = String.format("{\"status\": %d, \"error\": \"%s\", \"message\": \"%s\"}",
+                HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), errorMessage);
+
+        assertThat(response.getBodyAsString().block()).isEqualTo(expectedJson);
     }
 
     @Test
     void handle_shouldReturnInternalServerErrorForGenericException() {
-        // Arrange
-        Throwable exception = new RuntimeException("Algo salió mal");
+        Throwable exception = new RuntimeException("Something went wrong");
         ServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.post("/api/franchises").build()
         );
 
-        // Act
         Mono<Void> result = handler.handle(exchange, exception);
 
-        // Assert
         StepVerifier.create(result).verifyComplete();
 
         MockServerHttpResponse response = (MockServerHttpResponse) exchange.getResponse();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertThat(response.getBodyAsString().block()).isEqualTo("Unexpected error");
+
+        String expectedJson = String.format("{\"status\": %d, \"error\": \"%s\", \"message\": \"%s\"}",
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Unexpected error");
+
+        assertThat(response.getBodyAsString().block()).isEqualTo(expectedJson);
     }
 }

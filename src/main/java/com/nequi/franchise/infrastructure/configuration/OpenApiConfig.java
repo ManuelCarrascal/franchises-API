@@ -25,4 +25,12 @@ public class OpenApiConfig {
                 .pathsToMatch("/api/franchises/**")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi branchApi() {
+        return GroupedOpenApi.builder()
+                .group("branch")
+                .pathsToMatch("/api/branches/**")
+                .build();
+    }
 }
