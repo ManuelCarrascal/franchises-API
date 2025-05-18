@@ -1,6 +1,7 @@
 package com.nequi.franchise.application.handler.impl;
 
 import com.nequi.franchise.application.dto.request.ProductRequestDto;
+import com.nequi.franchise.application.dto.request.StockUpdateRequestDto;
 import com.nequi.franchise.application.handler.IProductHandler;
 import com.nequi.franchise.application.mapper.IProductMapper;
 import com.nequi.franchise.domain.api.IProductServicePort;
@@ -9,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import static com.nequi.franchise.application.util.constants.ProductHandlerConstants.*;
 
 @AllArgsConstructor
 public class ProductHandler implements IProductHandler {
@@ -22,7 +25,7 @@ public class ProductHandler implements IProductHandler {
                 .flatMap(dto -> {
                     if (dto.getName() == null || dto.getPrice() == null || dto.getBranchId() == null) {
                         return ServerResponse.badRequest()
-                                .bodyValue("All product fields are required");
+                                .bodyValue(INVALID_PRODUCT_FIELDS );
                     }
                     return productServicePort.createProduct(productMapper.toModel(dto))
                             .map(productMapper::toDto)
@@ -35,11 +38,11 @@ public class ProductHandler implements IProductHandler {
     @Override
     public Mono<ServerResponse> delete(ServerRequest request) {
         try {
-            Long id = Long.parseLong(request.pathVariable("id"));
+            Long id = Long.parseLong(request.pathVariable(PATH_VARIABLE_ID));
 
-            if (id <= 0) {
+            if (id <= MIN_VALID_ID) {
                 return ServerResponse.badRequest()
-                        .bodyValue("Product ID must be a positive number");
+                        .bodyValue(NEGATIVE_PRODUCT_ID);
             }
 
             return productServicePort.deleteProduct(id)
@@ -47,7 +50,21 @@ public class ProductHandler implements IProductHandler {
 
         } catch (NumberFormatException e) {
             return ServerResponse.badRequest()
-                    .bodyValue("Product ID must be a valid number");
+                    .bodyValue(INVALID_PRODUCT_ID);
         }
+    }
+
+    @Override
+    public Mono<ServerResponse> updateStock(ServerRequest request) {
+        Long id = Long.valueOf(request.pathVariable(PATH_VARIABLE_ID));
+        return request.bodyToMono(StockUpdateRequestDto.class)
+                .flatMap(dto -> {
+                    if (dto.getStock() == null || dto.getStock() < MIN_VALID_STOCK) {
+                        return ServerResponse.badRequest().bodyValue(INVALID_STOCK_VALUE );
+                    }
+                    return productServicePort.updateStock(id, dto.getStock())
+                            .map(productMapper::toDto)
+                            .flatMap(res -> ServerResponse.ok().bodyValue(res));
+                });
     }
 }

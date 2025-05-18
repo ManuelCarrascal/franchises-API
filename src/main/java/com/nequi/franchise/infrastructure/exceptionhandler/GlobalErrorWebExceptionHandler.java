@@ -16,7 +16,10 @@ public class GlobalErrorWebExceptionHandler implements ErrorWebExceptionHandler 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         String message = "Unexpected error";
 
-        if (ex instanceof InvalidFranchiseDataException || ex instanceof InvalidBranchDataException || ex  instanceof InvalidProductDataException) {
+        if (ex instanceof InvalidFranchiseDataException
+                || ex instanceof InvalidBranchDataException
+                || ex  instanceof InvalidProductDataException
+                || ex instanceof  InvalidStockException) {
             status = HttpStatus.BAD_REQUEST;
             message = ex.getMessage();
         }  else if (ex instanceof FranchiseNotFoundException || ex instanceof BranchNotFoundException || ex instanceof ProductNotFoundException) {

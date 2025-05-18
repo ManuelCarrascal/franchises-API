@@ -1,8 +1,10 @@
 package com.nequi.franchise.infrastructure.input.entrypoints;
 
 import com.nequi.franchise.application.dto.request.ProductRequestDto;
+import com.nequi.franchise.application.dto.request.StockUpdateRequestDto;
 import com.nequi.franchise.application.handler.IProductHandler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -62,12 +64,31 @@ public class ProductRouter {
                                     @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/products/{id}/stock",
+                    method = RequestMethod.PUT,
+                    beanClass = IProductHandler.class,
+                    beanMethod = "updateStock",
+                    operation = @Operation(
+                            operationId = "updateProductStock",
+                            summary = "Update product stock",
+                            description = "Modifies the stock of a specific product",
+                            parameters = @Parameter(name = "id", description = "Product ID", required = true),
+                            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = StockUpdateRequestDto.class))),
+                            responses = {
+                                    @ApiResponse(responseCode = RESPONSE_200, description = "Stock updated successfully"),
+                                    @ApiResponse(responseCode = RESPONSE_400, description = "Invalid stock value"),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = "Product not found")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> productRoutes(IProductHandler handler) {
         return RouterFunctions.route()
                 .POST(BASE_PATH, handler::create)
                 .DELETE(BASE_PATH + "/{id}", handler::delete)
+                .PUT(BASE_PATH + "/{id}/stock", handler::updateStock)
                 .build();
     }
 }
