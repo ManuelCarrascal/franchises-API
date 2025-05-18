@@ -2,6 +2,7 @@ package com.nequi.franchise.domain.usecase;
 
 import com.nequi.franchise.domain.exception.BranchNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidProductDataException;
+import com.nequi.franchise.domain.exception.ProductNotFoundException;
 import com.nequi.franchise.domain.model.Product;
 import com.nequi.franchise.domain.model.Branch;
 import com.nequi.franchise.domain.spi.IBranchPersistencePort;
@@ -49,5 +50,20 @@ class ProductUseCaseTest {
                 .verifyComplete();
 
         verify(productPersistencePort).saveProduct(product);
+    }
+
+    @Test
+    void deleteProduct_shouldDeleteProduct_whenProductExists() {
+        Long productId = 1L;
+        Product existingProduct = new Product(productId, "Product 1", 10.0, 1L);
+
+        when(productPersistencePort.findById(productId)).thenReturn(Mono.just(existingProduct));
+        when(productPersistencePort.deleteById(productId)).thenReturn(Mono.empty());
+
+        StepVerifier.create(productUseCase.deleteProduct(productId))
+                .verifyComplete();
+
+        verify(productPersistencePort).findById(productId);
+        verify(productPersistencePort).deleteById(productId);
     }
 }

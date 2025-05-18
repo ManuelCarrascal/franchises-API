@@ -19,15 +19,35 @@ public class ProductHandler implements IProductHandler {
     @Override
     public Mono<ServerResponse> create(ServerRequest request) {
         return request.bodyToMono(ProductRequestDto.class)
-                .flatMap(dto -> productServicePort.createProduct(productMapper.toModel(dto)))
-                .map(productMapper::toDto)
-                .flatMap(res -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res));
+                .flatMap(dto -> {
+                    if (dto.getName() == null || dto.getPrice() == null || dto.getBranchId() == null) {
+                        return ServerResponse.badRequest()
+                                .bodyValue("All product fields are required");
+                    }
+                    return productServicePort.createProduct(productMapper.toModel(dto))
+                            .map(productMapper::toDto)
+                            .flatMap(res -> ServerResponse.ok()
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .bodyValue(res));
+                });
     }
 
     @Override
     public Mono<ServerResponse> delete(ServerRequest request) {
-        Long id = Long.valueOf(request.pathVariable("id"));
-        return productServicePort.deleteProduct(id)
-                .then(ServerResponse.noContent().build());
+        try {
+            Long id = Long.parseLong(request.pathVariable("id"));
+
+            if (id <= 0) {
+                return ServerResponse.badRequest()
+                        .bodyValue("Product ID must be a positive number");
+            }
+
+            return productServicePort.deleteProduct(id)
+                    .then(ServerResponse.noContent().build());
+
+        } catch (NumberFormatException e) {
+            return ServerResponse.badRequest()
+                    .bodyValue("Product ID must be a valid number");
+        }
     }
 }
