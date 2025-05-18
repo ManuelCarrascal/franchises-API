@@ -17,8 +17,18 @@ public class BranchHandler implements IBranchHandler {
     @Override
     public Mono<ServerResponse> create(ServerRequest request) {
         return request.bodyToMono(BranchRequestDto.class)
-                .flatMap(dto -> branchServicePort.createBranch(branchMapper.toModel(dto)))
-                .map(branchMapper::toDto)
-                .flatMap(res -> ServerResponse.ok().bodyValue(res));
+                .flatMap(dto -> {
+                    if (dto.getFranchiseId() == null ||
+                            dto.getName() == null || dto.getName().isBlank() ||
+                            dto.getAddress() == null || dto.getAddress().isBlank()) {
+
+                        return ServerResponse.badRequest()
+                                .bodyValue("All fields (franchiseId, name, address) are required.");
+                    }
+
+                    return branchServicePort.createBranch(branchMapper.toModel(dto))
+                            .map(branchMapper::toDto)
+                            .flatMap(res -> ServerResponse.ok().bodyValue(res));
+                });
     }
 }
