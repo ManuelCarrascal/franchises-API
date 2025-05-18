@@ -66,20 +66,20 @@ public class ProductRouter {
                     )
             ),
             @RouterOperation(
-                    path = "/api/products/{id}/stock",
+                    path = BASE_PATH+"/{id}/stock",
                     method = RequestMethod.PUT,
                     beanClass = IProductHandler.class,
                     beanMethod = "updateStock",
                     operation = @Operation(
-                            operationId = "updateProductStock",
-                            summary = "Update product stock",
-                            description = "Modifies the stock of a specific product",
-                            parameters = @Parameter(name = "id", description = "Product ID", required = true),
+                            operationId = OPERATION_ID_UPDATE_STOCK,
+                            summary = OPERATION_SUMMARY_UPDATE_STOCK,
+                            description = OPERATION_DESCRIPTION_UPDATE_STOCK,
+                            parameters = @Parameter(name = PARAMETER_ID_NAME, description = PARAMETER_ID_DESCRIPTION, required = true),
                             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = StockUpdateRequestDto.class))),
                             responses = {
-                                    @ApiResponse(responseCode = RESPONSE_200, description = "Stock updated successfully"),
-                                    @ApiResponse(responseCode = RESPONSE_400, description = "Invalid stock value"),
-                                    @ApiResponse(responseCode = RESPONSE_404, description = "Product not found")
+                                    @ApiResponse(responseCode = RESPONSE_200, description = RESPONSE_STOCK_UPDATED_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_400, description = RESPONSE_INVALID_STOCK_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_NOT_FOUND_DESCRIPTION)
                             }
                     )
             )
