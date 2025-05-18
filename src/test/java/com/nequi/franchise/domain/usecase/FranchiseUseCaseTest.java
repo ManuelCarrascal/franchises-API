@@ -1,5 +1,6 @@
 package com.nequi.franchise.domain.usecase;
 
+import com.nequi.franchise.domain.exception.FranchiseNotFoundException;
 import com.nequi.franchise.domain.exception.InvalidFranchiseDataException;
 import com.nequi.franchise.domain.model.Franchise;
 import com.nequi.franchise.domain.spi.IFranchisePersistencePort;
@@ -58,6 +59,65 @@ class FranchiseUseCaseTest {
                                 error.getMessage().equals("El nombre de la franquicia es obligatorio"))
                 .verify();
 
+        verify(persistencePort, never()).saveFranchise(any());
+    }
+
+    @Test
+    void updateFranchiseName_shouldReturnUpdatedFranchise_whenDataIsValid() {
+        Long id = 1L;
+        String newName = "New Name";
+        Franchise existing = new Franchise(id, "Old Name");
+        Franchise updated = new Franchise(id, newName);
+
+        when(persistencePort.findById(id)).thenReturn(Mono.just(existing));
+        when(persistencePort.saveFranchise(any())).thenReturn(Mono.just(updated));
+
+        StepVerifier.create(useCase.updateFranchiseName(id, newName))
+                .expectNextMatches(franchise -> franchise.getId().equals(id) && franchise.getName().equals(newName))
+                .verifyComplete();
+
+        verify(persistencePort).findById(id);
+        verify(persistencePort).saveFranchise(existing);
+    }
+
+    @Test
+    void updateFranchiseName_shouldReturnError_whenIdIsInvalid() {
+        StepVerifier.create(useCase.updateFranchiseName(0L, "Valid Name"))
+                .expectErrorMatches(error ->
+                        error instanceof InvalidFranchiseDataException &&
+                                error.getMessage().equals("Invalid franchise ID or name"))
+                .verify();
+
+        verify(persistencePort, never()).findById(any());
+        verify(persistencePort, never()).saveFranchise(any());
+    }
+
+    @Test
+    void updateFranchiseName_shouldReturnError_whenNameIsInvalid() {
+        StepVerifier.create(useCase.updateFranchiseName(1L, " "))
+                .expectErrorMatches(error ->
+                        error instanceof InvalidFranchiseDataException &&
+                                error.getMessage().equals("Invalid franchise ID or name"))
+                .verify();
+
+        verify(persistencePort, never()).findById(any());
+        verify(persistencePort, never()).saveFranchise(any());
+    }
+
+    @Test
+    void updateFranchiseName_shouldReturnError_whenFranchiseNotFound() {
+        Long id = 99L;
+        String newName = "New Franchise";
+
+        when(persistencePort.findById(id)).thenReturn(Mono.empty());
+
+        StepVerifier.create(useCase.updateFranchiseName(id, newName))
+                .expectErrorMatches(error ->
+                        error instanceof FranchiseNotFoundException &&
+                                error.getMessage().equals("Franchise not found"))
+                .verify();
+
+        verify(persistencePort).findById(id);
         verify(persistencePort, never()).saveFranchise(any());
     }
 }
