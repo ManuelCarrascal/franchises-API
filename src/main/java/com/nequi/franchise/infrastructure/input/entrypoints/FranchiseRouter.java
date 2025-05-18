@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static com.nequi.franchise.infrastructure.utils.constants.ResponseCodesOpenApiConstants.RESPONSE_200;
-import static com.nequi.franchise.infrastructure.utils.constants.ResponseCodesOpenApiConstants.RESPONSE_400;
+import static com.nequi.franchise.infrastructure.utils.constants.FranchiseRouterConstants.*;
+import static com.nequi.franchise.infrastructure.utils.constants.ResponseCodesOpenApiConstants.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -47,8 +47,14 @@ public class FranchiseRouter {
                                     )
                             ),
                             responses = {
-                                    @ApiResponse(responseCode = RESPONSE_200, description = FranchiseRouterConstants.RESPONSE_OK_DESCRIPTION),
-                                    @ApiResponse(responseCode = RESPONSE_400, description = FranchiseRouterConstants.RESPONSE_BAD_REQUEST_DESCRIPTION)
+                                    @ApiResponse(
+                                            responseCode = RESPONSE_200,
+                                            description = FranchiseRouterConstants.RESPONSE_OK_DESCRIPTION
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = RESPONSE_400,
+                                            description = FranchiseRouterConstants.RESPONSE_BAD_REQUEST_DESCRIPTION
+                                    )
                             }
                     )
             ),
@@ -58,15 +64,22 @@ public class FranchiseRouter {
                     beanClass = IFranchiseHandler.class,
                     beanMethod = "update",
                     operation = @Operation(
-                            operationId = "updateFranchise",
-                            summary = "Update a franchise's name",
-                            description = "Modifies the name of a specific franchise",
-                            parameters = @Parameter(name = "id", description = "Franchise ID", required = true),
-                            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = FranchiseUpdateRequestDto.class))),
+                            operationId = OPERATION_ID_UPDATE,
+                            summary = OPERATION_SUMMARY_UPDATE,
+                            description = OPERATION_DESCRIPTION_UPDATE,
+                            parameters = @Parameter(name = PARAM_FRANCHISE_ID,
+                                    description = PARAM_FRANCHISE_ID_DESCRIPTION,
+                                    required = true),
+                            requestBody = @RequestBody(
+                                    content = @Content(schema = @Schema(implementation = FranchiseUpdateRequestDto.class
+                                    ))),
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Franchise updated successfully"),
-                                    @ApiResponse(responseCode = "400", description = "Invalid franchise data"),
-                                    @ApiResponse(responseCode = "404", description = "Franchise not found")
+                                    @ApiResponse(responseCode = RESPONSE_200,
+                                            description = RESPONSE_OK_UPDATE_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_400,
+                                            description = RESPONSE_BAD_REQUEST_UPDATE_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_404,
+                                            description = RESPONSE_NOT_FOUND_DESCRIPTION)
                             }
                     )
             )
