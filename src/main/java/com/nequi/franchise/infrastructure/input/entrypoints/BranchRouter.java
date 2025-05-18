@@ -53,20 +53,20 @@ public class BranchRouter {
                     )
             ),
             @RouterOperation(
-                    path = "/api/branches/{id}",
+                    path = BASE_PATH+"/{id}",
                     method = RequestMethod.PUT,
                     beanClass = IBranchHandler.class,
                     beanMethod = "update",
                     operation = @Operation(
-                            operationId = "updateBranch",
-                            summary = "Update a branch's name",
-                            description = "Updates the name of a specific branch by ID",
-                            parameters = @Parameter(name = "id", description = "Branch ID", required = true),
+                            operationId = OPERATION_ID_UPDATE,
+                            summary = OPERATION_SUMMARY_UPDATE,
+                            description = OPERATION_DESCRIPTION_UPDATE,
+                            parameters = @Parameter(name = PARAMETER_ID_NAME, description = PARAMETER_ID_DESCRIPTION, required = true),
                             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = BranchUpdateRequestDto.class))),
                             responses = {
-                                    @ApiResponse(responseCode = "200", description = "Branch updated successfully"),
-                                    @ApiResponse(responseCode = "400", description = "Invalid input"),
-                                    @ApiResponse(responseCode = "404", description = "Branch not found")
+                                    @ApiResponse(responseCode = RESPONSE_200, description = RESPONSE_OK_UPDATE_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_400, description = RESPONSE_INVALID_INPUT_DESCRIPTION),
+                                    @ApiResponse(responseCode = RESPONSE_404, description = RESPONSE_BRANCH_NOT_FOUND_DESCRIPTION)
                             }
                     )
             )

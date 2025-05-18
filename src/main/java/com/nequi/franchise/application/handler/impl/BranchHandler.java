@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import static com.nequi.franchise.application.util.constants.BranchHandlerConstants.*;
+
 @AllArgsConstructor
 public class BranchHandler implements IBranchHandler {
 
@@ -24,7 +27,7 @@ public class BranchHandler implements IBranchHandler {
                             dto.getAddress() == null || dto.getAddress().isBlank()) {
 
                         return ServerResponse.badRequest()
-                                .bodyValue("All fields (franchiseId, name, address) are required.");
+                                .bodyValue(ERROR_REQUIRED_FIELDS);
                     }
 
                     return branchServicePort.createBranch(branchMapper.toModel(dto))
@@ -41,7 +44,7 @@ public class BranchHandler implements IBranchHandler {
             return request.bodyToMono(BranchUpdateRequestDto.class)
                     .flatMap(dto -> {
                         if (dto.getName() == null || dto.getName().isBlank()) {
-                            return ServerResponse.badRequest().bodyValue("Branch name is required");
+                            return ServerResponse.badRequest().bodyValue(ERROR_REQUIRED_BRANCH_NAME);
                         }
 
                         return branchServicePort.updateBranchName(id, dto.getName())
@@ -50,7 +53,7 @@ public class BranchHandler implements IBranchHandler {
                     });
 
         } catch (NumberFormatException e) {
-            return ServerResponse.badRequest().bodyValue("Branch ID must be a valid number");
+            return ServerResponse.badRequest().bodyValue(ERROR_INVALID_BRANCH_ID);
         }
     }
 }
