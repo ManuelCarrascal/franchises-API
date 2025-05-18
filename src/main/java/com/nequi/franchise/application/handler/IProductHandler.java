@@ -6,4 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface IProductHandler{
     Mono<ServerResponse> create(ServerRequest request);
+    Mono<ServerResponse> delete(ServerRequest request);
+
 }

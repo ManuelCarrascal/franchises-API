@@ -23,4 +23,11 @@ public class ProductHandler implements IProductHandler {
                 .map(productMapper::toDto)
                 .flatMap(res -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res));
     }
+
+    @Override
+    public Mono<ServerResponse> delete(ServerRequest request) {
+        Long id = Long.valueOf(request.pathVariable("id"));
+        return productServicePort.deleteProduct(id)
+                .then(ServerResponse.noContent().build());
+    }
 }

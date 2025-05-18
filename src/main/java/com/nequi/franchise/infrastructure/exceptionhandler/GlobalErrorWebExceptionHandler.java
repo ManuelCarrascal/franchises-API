@@ -1,9 +1,6 @@
 package com.nequi.franchise.infrastructure.exceptionhandler;
 
-import com.nequi.franchise.domain.exception.BranchNotFoundException;
-import com.nequi.franchise.domain.exception.FranchiseNotFoundException;
-import com.nequi.franchise.domain.exception.InvalidFranchiseDataException;
-import com.nequi.franchise.domain.exception.InvalidBranchDataException;
+import com.nequi.franchise.domain.exception.*;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,10 +16,10 @@ public class GlobalErrorWebExceptionHandler implements ErrorWebExceptionHandler 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         String message = "Unexpected error";
 
-        if (ex instanceof InvalidFranchiseDataException || ex instanceof InvalidBranchDataException) {
+        if (ex instanceof InvalidFranchiseDataException || ex instanceof InvalidBranchDataException || ex  instanceof InvalidProductDataException) {
             status = HttpStatus.BAD_REQUEST;
             message = ex.getMessage();
-        }  else if (ex instanceof FranchiseNotFoundException || ex instanceof BranchNotFoundException) {
+        }  else if (ex instanceof FranchiseNotFoundException || ex instanceof BranchNotFoundException || ex instanceof ProductNotFoundException) {
             status = HttpStatus.NOT_FOUND;
             message = ex.getMessage();
         }

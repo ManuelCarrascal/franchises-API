@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static com.nequi.franchise.infrastructure.utils.constants.ProductRouterConstants.*;
@@ -49,6 +50,11 @@ public class ProductRouter {
             )
     })
     public RouterFunction<ServerResponse> productRoutes(IProductHandler handler) {
-        return route(POST(BASE_PATH), handler::create);
+        return RouterFunctions.route()
+                .POST("/api/products", handler::create)
+                .DELETE("/api/products/{id}", handler::delete)
+                .build();
     }
+
+
 }
