@@ -5,5 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface IFranchiseServicePort {
     Mono<Franchise> createFranchise(Franchise franchise);
+    Mono<Franchise> updateFranchiseName(Long id, String newName);
 
 }
