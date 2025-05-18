@@ -1,0 +1,30 @@
+package com.nequi.franchise.infrastructure.exceptionhandler;
+
+import com.nequi.franchise.domain.exception.InvalidFranchiseDataException;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+
+public class GlobalErrorWebExceptionHandler implements ErrorWebExceptionHandler {
+    @Override
+    public Mono<Void> handle( ServerWebExchange exchange, Throwable ex) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String message = "Unexpected error";
+
+        if (ex instanceof InvalidFranchiseDataException) {
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
+
+        exchange.getResponse().setStatusCode(status);
+        exchange.getResponse().getHeaders().setContentType(MediaType.TEXT_PLAIN);
+
+        byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+        return exchange.getResponse()
+                .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+    }
+}
