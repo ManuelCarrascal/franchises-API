@@ -56,7 +56,7 @@ public class ProductUseCase implements IProductServicePort {
 
     @Override
     public Mono<Product> updateName(Long productId, String newName) {
-        if (productId == null || productId <= 0 || newName == null || newName.trim().isEmpty()) {
+        if (productId == null || productId <= MIN_PRODUCT_ID || newName == null || newName.trim().isEmpty()) {
             return Mono.error(new InvalidProductDataException(ERROR_INVALID_PRODUCT_ID_OR_NAME));
         }
 

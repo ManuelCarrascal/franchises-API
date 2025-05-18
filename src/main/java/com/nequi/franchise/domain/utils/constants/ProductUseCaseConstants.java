@@ -9,6 +9,7 @@ public class ProductUseCaseConstants {
     public static final String ERROR_INVALID_PRODUCT_ID_OR_NAME = "Invalid product ID or name";
 
     public static final Integer MIN_STOCK_VALUE = 0;
+    public static final Integer MIN_PRODUCT_ID= 0;
 
     private ProductUseCaseConstants() {
     }
