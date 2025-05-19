@@ -65,11 +65,11 @@ class FranchiseHandlerTest {
     }
 
     @Test
-    void update_shouldReturnBadRequest_whenIdIsInvalid() {
+    void update_Franchise_shouldReturnBadRequest_whenIdIsInvalid() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("id")).thenReturn("abc");
 
-        StepVerifier.create(handler.update(request))
+        StepVerifier.create(handler.updateFranchise(request))
                 .expectNextMatches(res -> res.statusCode().is4xxClientError())
                 .verifyComplete();
 
@@ -77,14 +77,14 @@ class FranchiseHandlerTest {
     }
 
     @Test
-    void update_shouldReturnBadRequest_whenNameIsEmpty() {
+    void update_Franchise_shouldReturnBadRequest_whenNameIsEmpty() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("id")).thenReturn("1");
 
         FranchiseUpdateRequestDto dto = new FranchiseUpdateRequestDto("   ");
         when(request.bodyToMono(FranchiseUpdateRequestDto.class)).thenReturn(Mono.just(dto));
 
-        StepVerifier.create(handler.update(request))
+        StepVerifier.create(handler.updateFranchise(request))
                 .expectNextMatches(res -> res.statusCode().is4xxClientError())
                 .verifyComplete();
 
@@ -92,7 +92,7 @@ class FranchiseHandlerTest {
     }
 
     @Test
-    void update_shouldReturnOk_whenValidDataProvided() {
+    void update_Franchise_shouldReturnOk_whenValidDataProvided() {
         Long id = 1L;
         String name = "Updated Franchise";
         FranchiseUpdateRequestDto dto = new FranchiseUpdateRequestDto(name);
@@ -106,7 +106,7 @@ class FranchiseHandlerTest {
         when(franchiseServicePort.updateFranchiseName(id, name)).thenReturn(Mono.just(updated));
         when(franchiseMapper.toDto(updated)).thenReturn(responseDto);
 
-        StepVerifier.create(handler.update(request))
+        StepVerifier.create(handler.updateFranchise(request))
                 .expectNextMatches(res -> res.statusCode().is2xxSuccessful())
                 .verifyComplete();
 

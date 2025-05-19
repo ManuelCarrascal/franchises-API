@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 public interface IBranchHandler {
     Mono<ServerResponse> create(ServerRequest request);
-    Mono<ServerResponse> update(ServerRequest request);
+    Mono<ServerResponse> updateBranch(ServerRequest request);
 }

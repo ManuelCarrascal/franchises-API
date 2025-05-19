@@ -65,11 +65,11 @@ class BranchHandlerTest {
 
 
     @Test
-    void update_shouldReturnBadRequest_whenIdIsInvalid() {
+    void update_Branch_shouldReturnBadRequest_whenIdIsInvalid() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("id")).thenReturn("abc");
 
-        StepVerifier.create(handler.update(request))
+        StepVerifier.create(handler.updateBranch(request))
                 .expectNextMatches(res -> res.statusCode().is4xxClientError())
                 .verifyComplete();
 
@@ -77,14 +77,14 @@ class BranchHandlerTest {
     }
 
     @Test
-    void update_shouldReturnBadRequest_whenNameIsEmpty() {
+    void update_Branch_shouldReturnBadRequest_whenNameIsEmpty() {
         BranchUpdateRequestDto dto = new BranchUpdateRequestDto("   ");
 
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("id")).thenReturn("1");
         when(request.bodyToMono(BranchUpdateRequestDto.class)).thenReturn(Mono.just(dto));
 
-        StepVerifier.create(handler.update(request))
+        StepVerifier.create(handler.updateBranch(request))
                 .expectNextMatches(res -> res.statusCode().is4xxClientError())
                 .verifyComplete();
 
@@ -92,7 +92,7 @@ class BranchHandlerTest {
     }
 
     @Test
-    void update_shouldReturnOk_whenValidUpdate() {
+    void update_shouldReturnOk_whenValidUpdateBranch() {
         Long id = 1L;
         BranchUpdateRequestDto dto = new BranchUpdateRequestDto("Sucursal Editada");
         Branch updated = new Branch(id, "Sucursal Editada", "Dir", 99L);
@@ -104,7 +104,7 @@ class BranchHandlerTest {
         when(branchServicePort.updateBranchName(id, dto.getName())).thenReturn(Mono.just(updated));
         when(branchMapper.toDto(updated)).thenReturn(responseDto);
 
-        StepVerifier.create(handler.update(request))
+        StepVerifier.create(handler.updateBranch(request))
                 .expectNextMatches(res -> res.statusCode().is2xxSuccessful())
                 .verifyComplete();
 

@@ -10,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import static com.nequi.franchise.application.util.constants.FranchiseHandlerConstants.*;
+
 @AllArgsConstructor
 public class FranchiseHandler implements IFranchiseHandler {
 
@@ -22,7 +25,7 @@ public class FranchiseHandler implements IFranchiseHandler {
                 .flatMap(dto -> {
                     if (dto.getName() == null || dto.getName().trim().isEmpty()) {
                         return ServerResponse.badRequest()
-                                .bodyValue("Franchise name must not be empty");
+                                .bodyValue(ERROR_NAME_EMPTY);
                     }
                     return franchiseServicePort.createFranchise(franchiseMapper.toModel(dto))
                             .map(franchiseMapper::toDto)
@@ -33,20 +36,20 @@ public class FranchiseHandler implements IFranchiseHandler {
     }
 
     @Override
-    public Mono<ServerResponse> update(ServerRequest request) {
+    public Mono<ServerResponse> updateFranchise(ServerRequest request) {
         try {
             Long id = Long.parseLong(request.pathVariable("id"));
             return request.bodyToMono(FranchiseUpdateRequestDto.class)
                     .flatMap(dto -> {
                         if (dto.getName() == null || dto.getName().trim().isEmpty()) {
-                            return ServerResponse.badRequest().bodyValue("Franchise name must not be empty");
+                            return ServerResponse.badRequest().bodyValue(ERROR_FRANCHISE_NOT_EMPTY);
                         }
                         return franchiseServicePort.updateFranchiseName(id, dto.getName())
                                 .map(franchiseMapper::toDto)
                                 .flatMap(updated -> ServerResponse.ok().bodyValue(updated));
                     });
         } catch (NumberFormatException e) {
-            return ServerResponse.badRequest().bodyValue("Franchise ID must be a valid number");
+            return ServerResponse.badRequest().bodyValue(ERROR_INVALID_ID);
         }
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static com.nequi.franchise.infrastructure.utils.constants.BranchRouterConstants.*;
 import static com.nequi.franchise.infrastructure.utils.constants.ResponseCodesOpenApiConstants.*;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -74,7 +73,7 @@ public class BranchRouter {
     public RouterFunction<ServerResponse> branchRoutes(IBranchHandler handler) {
         return route()
                 .POST(BASE_PATH, handler::create)
-                .PUT(BASE_PATH+"/{id}", handler::update)
+                .PUT(BASE_PATH+"/{id}", handler::updateBranch)
                 .build();
     }
 }
