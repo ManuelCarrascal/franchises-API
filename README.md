@@ -13,7 +13,7 @@ com.nequi.franchise
 │   ├── dto                  # DTOs de entrada/salida
 │   ├── handler              # Lógica HTTP (RouterFunctions)
 │   └── mapper               # Mapeadores con MapStruct
-├── domain                  # Capa de dominio
+├── domain                   # Capa de dominio
 │   ├── api                  # Interfaces (puertos de entrada)
 │   ├── exception            # Excepciones del dominio
 │   ├── model                # Entidades del dominio
@@ -101,8 +101,8 @@ WORKDIR /app
 COPY build/libs/franchise-0.0.1-SNAPSHOT.jar app.jar
 
 ENV DB_URL=r2dbc:mysql://franchises.c0tkayoskznw.us-east-1.rds.amazonaws.com:3306/franchises
-ENV DB_USERNAME=admin
-ENV DB_PASSWORD=Manuel963211007912596
+ENV DB_USERNAME=YOUR-RDS-USER
+ENV DB_PASSWORD=YOUR-RDS-PASSWORD
 
 EXPOSE 8080
 
@@ -114,7 +114,7 @@ Build y ejecución:
 docker build -t franchise-app .
 docker run -p 8080:8080 franchise-app
 ```
-### OOpción 2: Probar Localmente (MySQL + backend)
+### Opción 2: Probar Localmente (MySQL + backend)
 Paso 1: Generar base de datos local
 La carpeta `local-db/` contiene el siguiente archivo:
  - `db.sql` Script de creación de db con datos ya generados
@@ -124,9 +124,7 @@ Usa el siguiente `Dockerfile` para montar la base de datos:
 FROM mysql:8.0
 COPY db.sql /docker-entrypoint-initdb.d/
 ```
-
 Build y ejecución de la base de datos:
-
 ```
 docker build -t franchise-db-local ./local-db
 docker run --name mysql-franchise-local -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=franchises -p 3307:3306 -d franchise-db-local
@@ -142,7 +140,6 @@ docker run -p 8080:8080 \
 franchise-app
 ```
 
-
 ### Alternativa: Usar Podman
 Si estás usando Podman Desktop, puedes construir las imágenes y correr los contenedores de la misma forma.
 
@@ -150,8 +147,6 @@ Si estás usando Podman Desktop, puedes construir las imágenes y correr los con
 2. Selecciona el Dockerfile y asigna nombre.
 3. Ve a Containers → Create Container y selecciona los puertos y variables necesarias.
 4. Corre y observa los logs en vivo desde Podman.
-
-
 
 ### 🔐 Variables de Entorno del Backend
 

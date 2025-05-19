@@ -37,7 +37,7 @@ public class BranchHandler implements IBranchHandler {
     }
 
     @Override
-    public Mono<ServerResponse> update(ServerRequest request) {
+    public Mono<ServerResponse> updateBranch(ServerRequest request) {
         try {
             Long id = Long.parseLong(request.pathVariable("id"));
 

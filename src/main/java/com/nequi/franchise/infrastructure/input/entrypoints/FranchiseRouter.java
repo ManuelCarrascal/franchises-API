@@ -88,7 +88,7 @@ public class FranchiseRouter {
     public RouterFunction<ServerResponse> franchiseRoutes(IFranchiseHandler handler) {
         return route()
                 .POST(FranchiseRouterConstants.BASE_PATH,handler::create)
-                .PUT(FranchiseRouterConstants.BASE_PATH + "/{id}", handler::update)
+                .PUT(FranchiseRouterConstants.BASE_PATH + "/{id}", handler::updateFranchise)
                 .build();
     }
 }
